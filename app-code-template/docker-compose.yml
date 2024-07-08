@@ -1,0 +1,31 @@
+version: "3"
+
+volumes:
+  mongo_db_volume:
+
+services:
+
+  mongo_db: # Default port is 27017
+    container_name: DATABASE_MONGODB_DNS_NAME
+    image: mongo:latest
+    volumes:
+      - mongo_db_volume:/data/db
+
+  backend_server: # Default port is 4000
+    container_name: BACKEND_DNS_NAME
+    build:
+      context: backend/
+    image: backend_image
+    restart: on-failure
+    depends_on:
+      - mongo_db
+
+  frontend:
+    container_name: FRONTEND_DNS_NAME
+    build:
+      context: frontend/
+    image: frontend_image
+    ports:
+      - 80:80
+    depends_on:
+      - backend_server
